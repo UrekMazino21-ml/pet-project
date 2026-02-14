@@ -25,6 +25,8 @@ body {
   border-radius: 25px;
   backdrop-filter: blur(10px);
   transition: 0.6s;
+  position: relative;
+  z-index: 2; /* всегда выше сердечек */
 }
 
 /* Светящаяся рамка */
@@ -92,6 +94,8 @@ button {
   font-size: 1.5rem;
   opacity: 0.7;
   animation: float 12s linear infinite;
+  pointer-events: none; /* не перехватывают клики */
+  z-index: 1;
 }
 
 @keyframes float {
@@ -104,6 +108,7 @@ button {
   position: absolute;
   font-size: 2rem;
   animation: fall 6s linear infinite;
+  pointer-events: none; /* не мешают нажимать */
 }
 
 @keyframes fall {
@@ -215,14 +220,14 @@ function removeBackgroundHearts(){
   document.querySelectorAll('.bg-heart').forEach(e=>e.remove());
 }
 
-/* ---------------- ЛОГИКА КНОПОК ---------------- */
+/* КНОПКИ */
 
-// "Да" — сразу финал
+// Да — сразу финал
 yesBtn.onclick = () => {
   celebrate();
 };
 
-// "Нет" — идём по вопросам до конца
+// Нет — идём по вопросам
 noBtn.onclick = () => {
   if (step < questions.length - 1) {
     step++;
