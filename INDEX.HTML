@@ -1,0 +1,265 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Валентинка 💖</title>
+
+<style>
+/* ------------------ БАЗОВЫЕ СТИЛИ ------------------ */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: system-ui, sans-serif;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.8s ease;
+}
+
+/* Контейнер */
+.container {
+  text-align: center;
+  padding: 40px;
+  border-radius: 25px;
+  backdrop-filter: blur(10px);
+  transition: 0.6s;
+}
+
+/* Светящаяся рамка (вопрос 1) */
+.glow {
+  border: 2px solid rgba(255,255,255,0.6);
+  box-shadow: 0 0 25px rgba(255,255,255,0.6);
+}
+
+/* Текст вопроса */
+.question {
+  color: white;
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  opacity: 0;
+  transition: opacity 0.6s;
+}
+
+/* Имя выделено */
+.name {
+  color: #ffe6f2;
+}
+
+/* Стикеры */
+.sticker {
+  font-size: 8rem;
+  margin: 20px 0;
+  animation: bounce 1.6s infinite;
+}
+
+@keyframes bounce {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+}
+
+/* Пульсация сердца */
+.pulse {
+  animation: pulse 1.2s infinite;
+}
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+/* Кнопки */
+.buttons {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+button {
+  padding: 14px 36px;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: 0.3s;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* Да */
+.yes {
+  background: linear-gradient(45deg,#8a2be2,#ff69b4);
+  color: white;
+}
+
+/* Нет */
+.no {
+  background: white;
+  color: #333;
+}
+
+/* Фоновые сердечки */
+.bg-heart {
+  position: absolute;
+  font-size: 1.5rem;
+  opacity: 0.7;
+  animation: float 12s linear infinite;
+}
+
+@keyframes float {
+  from { transform: translateY(100vh) rotate(0); }
+  to { transform: translateY(-10vh) rotate(360deg); }
+}
+
+/* Финальные падающие сердечки */
+.fall-heart {
+  position: absolute;
+  font-size: 2rem;
+  animation: fall 6s linear infinite;
+}
+
+@keyframes fall {
+  from { transform: translateY(-10vh) rotate(0); }
+  to { transform: translateY(110vh) rotate(360deg); }
+}
+
+/* Финальный стикер */
+.final {
+  animation: spin 3s infinite linear;
+}
+
+@keyframes spin {
+  from { transform: rotate(0) scale(1); }
+  to { transform: rotate(360deg) scale(1.2); }
+}
+
+/* Адаптив */
+@media (max-width: 768px) {
+  .sticker { font-size: 6rem; }
+  .question { font-size: 2rem; }
+}
+@media (max-width: 480px) {
+  .sticker { font-size: 5rem; }
+  .question { font-size: 1.6rem; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container glow" id="container">
+  <div class="question" id="question"></div>
+  <div class="sticker" id="sticker"></div>
+  <div class="buttons">
+    <button class="yes" id="yesBtn">Да</button>
+    <button class="no" id="noBtn">Нет</button>
+  </div>
+</div>
+
+<script>
+const questions = [
+  {
+    text: 'Марианна, ты будешь моей валентинкой? 💕',
+    sticker: '💖',
+    bg: 'linear-gradient(135deg,#ff4d6d,#ff99ac)',
+    glow: true,
+    hearts: true
+  },
+  {
+    text: 'Точно не будешь? 🥺',
+    sticker: '🥺',
+    bg: 'linear-gradient(135deg,#ff758c,#ff7eb3)',
+  },
+  {
+    text: 'Ты уверена? 💔',
+    sticker: '😿',
+    bg: 'linear-gradient(135deg,#74c0fc,#a5d8ff)',
+  },
+  {
+    text: 'У тебя нет выбора! 😈💕',
+    sticker: '😼',
+    bg: 'linear-gradient(135deg,#20c997,#63e6be)',
+    last: true
+  }
+];
+
+let step = 0;
+const qEl = document.getElementById('question');
+const sEl = document.getElementById('sticker');
+const yesBtn = document.getElementById('yesBtn');
+const noBtn = document.getElementById('noBtn');
+const container = document.getElementById('container');
+
+function setQuestion() {
+  const q = questions[step];
+  document.body.style.background = q.bg;
+  qEl.style.opacity = 0;
+
+  setTimeout(() => {
+    qEl.innerHTML = q.text.replace('Марианна','<span class="name">Марианна</span>');
+    sEl.textContent = q.sticker;
+    qEl.style.opacity = 1;
+  }, 200);
+
+  container.classList.toggle('glow', !!q.glow);
+
+  if (q.hearts) createBackgroundHearts();
+  else removeBackgroundHearts();
+
+  if (q.last) noBtn.style.display = 'none';
+
+  yesBtn.style.transform = `scale(${1 + step*0.3})`;
+  noBtn.style.transform = `scale(${1 - step*0.2})`;
+}
+
+function createBackgroundHearts() {
+  removeBackgroundHearts();
+  const hearts = ['💕','💖','💗','💓','💝'];
+  for (let i=0;i<15;i++) {
+    const h = document.createElement('div');
+    h.className='bg-heart';
+    h.textContent = hearts[Math.floor(Math.random()*hearts.length)];
+    h.style.left = Math.random()*100+'vw';
+    h.style.animationDuration = 8+Math.random()*8+'s';
+    document.body.appendChild(h);
+  }
+}
+function removeBackgroundHearts(){
+  document.querySelectorAll('.bg-heart').forEach(e=>e.remove());
+}
+
+yesBtn.onclick = () => {
+  if (step < questions.length-1) {
+    step++;
+    setQuestion();
+  } else {
+    celebrate();
+  }
+};
+
+noBtn.onclick = () => {
+  if (step < questions.length-1) {
+    step++;
+    setQuestion();
+  }
+};
+
+function celebrate(){
+  container.innerHTML = '<div class="sticker final">🎉😻💖</div>';
+  document.body.style.background='linear-gradient(135deg,#ffd6e0,#fff3b0)';
+  for (let i=0;i<50;i++){
+    const h=document.createElement('div');
+    h.className='fall-heart';
+    h.textContent=['❤️','💕','💖','💗','💓','💝'][Math.floor(Math.random()*6)];
+    h.style.left=Math.random()*100+'vw';
+    h.style.animationDuration=3+Math.random()*4+'s';
+    document.body.appendChild(h);
+  }
+}
+
+setQuestion();
+</script>
+
+</body>
+</html>
